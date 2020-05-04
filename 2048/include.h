@@ -49,7 +49,7 @@ public:
 private:
     bool regret_flag;
     int up, left, high, len;
-    int score, regret_cnt;
+    int score, regret_cnt, pre_score;
     int data[4][4], pre_data[4][4];
     vector<pair<int, int> > em_ind;
 };

@@ -69,6 +69,7 @@ Game::Game(int UP, int LEFT, int HIGH, int LEN) {
     score = 0;
     regret_cnt = 3;
     regret_flag = false;
+    pre_score = 0;
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
             data[i][j] = 0;
@@ -174,6 +175,7 @@ void Game::regret() {
             pre_data[x][y] = data[x][y];
         }
     }
+    pre_score = score;
     return ;
 }
 
@@ -310,6 +312,7 @@ bool Game::operate(char op) {
             regret_flag = false;
             regret_cnt--;
             flag = true;
+            score = pre_score;
             for (int x = 0; x < 4; x++) {
                 for (int y = 0; y < 4; y++) {
                     data[x][y] = pre_data[x][y];
