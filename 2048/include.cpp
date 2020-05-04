@@ -376,6 +376,8 @@ void Game::record() {
 
 void Game::re_play() {
     score = 0;
+    regret_cnt = 3;
+    regret_flag = false;
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
             data[i][j] = 0;
