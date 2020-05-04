@@ -45,10 +45,12 @@ public:
     void exit_game();
     void record();
     void re_play();
+    void regret();
 private:
-    int up, down, left, right, high, len;
-    int score;
-    int data[4][4];
+    bool regret_flag;
+    int up, left, high, len;
+    int score, regret_cnt;
+    int data[4][4], pre_data[4][4];
     vector<pair<int, int> > em_ind;
 };
 

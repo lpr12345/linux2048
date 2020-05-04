@@ -22,7 +22,7 @@ int main() {
         while ((op = getch()) != 'q' && op != 'r') {
             if (!game.operate(op)) continue;
             game.re_empty();
-            game.rand_ind();
+            if (op != 'h') game.rand_ind();
             game.show();
             if (game.empty()) {
                 if (game.is_over()) {

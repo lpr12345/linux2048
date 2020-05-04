@@ -67,9 +67,12 @@ Game::Game(int UP, int LEFT, int HIGH, int LEN) {
     high = HIGH;
     len = LEN;
     score = 0;
+    regret_cnt = 3;
+    regret_flag = false;
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
             data[i][j] = 0;
+            pre_data[i][j] = 0;
             em_ind.push_back(pair<int, int> (i, j));
         }
     }
@@ -101,14 +104,16 @@ void Game::mk_map() {
         }
     }
     mvprintw(up + high + 4, left, "score : %s", itoc(score));
+    mvprintw(up + high + 5, left, "back to previous times : %s", itoc(regret_cnt));
     mvprintw(up + high + 8, left, "prompt : w, a, s, d -> control the game");
-    mvprintw(up + high + 9, left, "prompt : enter 'r' play the game again");
-    mvprintw(up + high + 10, left, "prompt : enter 'q' exit the game");
+    mvprintw(up + high + 9, left, "prompt : enter 'h' back to previous step");
+    mvprintw(up + high + 10, left, "prompt : enter 'r' play the game again");
+    mvprintw(up + high + 11, left, "prompt : enter 'q' exit the game");
     FILE *fp = fopen("his_max_score.txt", "r");
     char *str = (char *)calloc(25, 1);
     fgets(str, 23, fp);
     int max_score = atoi(str);
-    mvprintw(up + high + 5, left, "highest score in history : %s", itoc(max_score));
+    mvprintw(up + high + 6, left, "highest score in history : %s", itoc(max_score));
     fclose(fp);
     free(str);
     refresh();
@@ -129,6 +134,7 @@ void Game::show() {
         }
     }
     mvprintw(up + high + 4, left, "score : %s", itoc(score));
+    mvprintw(up + high + 5, left, "back to previous times : %s", itoc(regret_cnt));
     refresh();
     return ;
 }
@@ -162,12 +168,23 @@ void Game::re_empty() {
     return ;
 }
 
+void Game::regret() {
+    for (int x = 0; x < 4; x++) {
+        for (int y = 0; y < 4; y++) {
+            pre_data[x][y] = data[x][y];
+        }
+    }
+    return ;
+}
+
 bool Game::operate(char op) {
     bool flag = false;
+    if (op != 'h') regret();
     switch (op) {
         case 'w' : {
+            regret_flag = true;
             for (int y = 0; y < 4; y++) {
-                int temp[4], ind = 0;
+                int temp[4] = {0}, ind = 0;
                 for (int x = 0; x < 4; x++) {
                     if (data[x][y] != 0) {
                         temp[ind] = data[x][y];
@@ -196,8 +213,9 @@ bool Game::operate(char op) {
             }
         } break;
         case 's' : {
+            regret_flag = true;
             for (int y = 0; y < 4; y++) {
-                int temp[4], ind = 0;
+                int temp[4] = {0}, ind = 0;
                 for (int x = 3; x >= 0; x--) {
                     if (data[x][y] != 0) {
                         temp[ind] = data[x][y];
@@ -226,8 +244,9 @@ bool Game::operate(char op) {
             }
         } break;
         case 'a' : {
+            regret_flag = true;
             for (int x = 0; x < 4; x++) {
-                int temp[4], ind = 0;
+                int temp[4] = {0}, ind = 0;
                 for (int y = 0; y < 4; y++) {
                     if (data[x][y] != 0) {
                         temp[ind] = data[x][y];
@@ -256,8 +275,9 @@ bool Game::operate(char op) {
             }
         } break;
         case 'd' : {
+            regret_flag = true;
             for (int x = 0; x < 4; x++) {
-                int temp[4], ind = 0;
+                int temp[4] = {0}, ind = 0;
                 for (int y = 3; y >= 0; y--) {
                     if (data[x][y] != 0) {
                         temp[ind] = data[x][y];
@@ -284,6 +304,17 @@ bool Game::operate(char op) {
                     }
                 }
             }
+        } break;
+        case 'h' : {
+            if (regret_flag == false || regret_cnt == 0) break;
+            regret_flag = false;
+            regret_cnt--;
+            flag = true;
+            for (int x = 0; x < 4; x++) {
+                for (int y = 0; y < 4; y++) {
+                    data[x][y] = pre_data[x][y];
+                }
+            }        
         } break;
     } 
     return flag;
